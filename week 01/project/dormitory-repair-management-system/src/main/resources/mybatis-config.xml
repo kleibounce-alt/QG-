@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- 开启驼峰命名映射（数据库字段下划线自动转 Java 属性驼峰） -->
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <!-- 配置 MyBatis‑Plus 插件（例如分页插件） -->
+    <plugins>
+        <plugin interceptor="com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor">
+            <property name="dbType" value="mysql"/>
+        </plugin>
+    </plugins>
+
+    <!-- 数据库环境配置 -->
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://127.0.0.1:3306/QG?useSSL=false&amp;serverTimezone=Asia/Shanghai"/>
+                <property name="username" value="root"/>
+                <property name="password" value="112302kxt"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!-- 注册 Mapper 接口 -->
+    <mappers>
+        <mapper class="mapper.StudentMapper"/>
+        <mapper class="mapper.AdminMapper"/>
+        <mapper class="mapper.ReportMapper"/>
+    </mappers>
+
+</configuration>
