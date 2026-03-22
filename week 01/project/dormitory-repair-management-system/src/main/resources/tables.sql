@@ -9,7 +9,8 @@ CREATE TABLE report (
             studentId BIGINT DEFAULT NULL,
             deviceType VARCHAR(20) DEFAULT NULL,
             description VARCHAR(40) DEFAULT NULL,
-            status ENUM('active', 'inactive') NOT NULL,
+            status ENUM('已完成', '未完成') NOT NULL,
+            time varchar(30) DEFAULT NULL,
             PRIMARY KEY (id)
 );
 

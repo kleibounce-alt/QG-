@@ -13,6 +13,8 @@ import sun.security.mscapi.CPublicKey;
 import utils.MyBatisPlusSessionFactory;
 import utils.intInput;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -135,7 +137,7 @@ public class AdminService {
                 return;
             }
             for (report report : reports) {
-                System.out.println("单号：" + report.getId() + " || 报修人：" + report.getStudentId());
+                System.out.println("单号：" + report.getId() + " || 报修人：" + report.getStudentId() + " || 报修状态：" + report.getStatus());
             }
         }
     }
@@ -158,7 +160,7 @@ public class AdminService {
             int choice = intInput.intInput(1, len);
             report report = mapper.selectById(choice);
             System.out.println("单号：" + report.getId() + "\n报修人：" + report.getStudentId() +
-                    "\n设备类型：" + report.getDeviceType() + "\n描述：" + report.getDescription() + "\n状态" + report.getStatus());
+                    "\n设备类型：" + report.getDeviceType() + "\n描述：" + report.getDescription() + "\n状态：" + report.getStatus() + "\n时间：" + report.getTime());
             return;
         }
         catch (Exception e) {
@@ -180,7 +182,7 @@ public class AdminService {
 
             System.out.println("===== 所有报修单状态 =====");
             for (report report : reports) {
-                System.out.println("单号：" + report.getId() + " || 状态：" + report.getStatus());
+                System.out.println("单号：" + report.getId() + " || 状态：" + report.getStatus() + " || 时间：" + report.getTime());
             }
 
             System.out.println("请输入要更新的报修单Id(1 ~ " +  reports.size() + ")：");
@@ -191,13 +193,19 @@ public class AdminService {
             int choice2 = intInput.intInput(1, 2);
             int r;
             if (choice2 == 1) {
+                //更新时间
+                LocalDateTime now = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String currentTime = now.format(formatter);
+                report.setTime(currentTime);
                 String status = report.getStatus();
-                if (status.equals("active")) {
-                    report.setStatus("inactive");
+
+                if (status.equals("未完成")) {
+                    report.setStatus("已完成");
                     r = mapper.updateById(report);
                 }
                 else {
-                    report.setStatus("active");
+                    report.setStatus("未完成");
                     r = mapper.updateById(report);
                 }
 

@@ -15,4 +15,5 @@ public class report {
     private String deviceType;
     private String description;
     private String status;
+    private String time;
 }

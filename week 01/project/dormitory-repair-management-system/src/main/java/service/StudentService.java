@@ -10,6 +10,8 @@ import utils.MyBatisPlusSessionFactory;
 import utils.intInput;
 import entity.report;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -224,7 +226,13 @@ public class StudentService {
             report.setStudentId(student.getId());
             report.setDeviceType(deviceType);
             report.setDescription(description);
-            report.setStatus("active");
+            report.setStatus("未完成");
+
+            //获取当前时间
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String currentTime = now.format(formatter);
+            report.setTime(currentTime);
 
             SqlSessionFactory sqlSessionFactory =  MyBatisPlusSessionFactory.getSqlSessionFactory();
             try (SqlSession session = sqlSessionFactory.openSession(true)) {
@@ -262,7 +270,7 @@ public class StudentService {
                 System.out.println("单号：" + report.getId());
                 System.out.println("设备类型：" + report.getDeviceType());
                 System.out.println("故障描述：" + report.getDescription());
-                System.out.println("状态：" + (report.getStatus() == null ? "未知" : report.getStatus()));
+                System.out.println("状态：" + (report.getStatus()));
                 System.out.println("----------------------------");
             }
         }
@@ -305,19 +313,12 @@ public class StudentService {
                 System.out.println("该报修单不属于您的！");
                 return ;
             }
-            if (!rp.getStatus().equals("active")) {
-                System.out.println("已经是取消状态了！");
-                return ;
-            }
-            rp.setStatus("inactive");
-            int r = mapper.updateById(rp);
+            int r = mapper.deleteById(rp);
             if (r > 0) {
                 System.out.println("取消成功！");
-                return ;
             }
             else {
                 System.out.println("取消失败！");
-                return ;
             }
         }
         catch (Exception e) {
