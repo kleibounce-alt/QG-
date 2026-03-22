@@ -1,7 +1,10 @@
 package service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.Mapper;
+import entity.Admin;
 import entity.Student;
+import mapper.AdminMapper;
 import mapper.StudentMapper;
 import mapper.reportMapper;
 import org.apache.ibatis.session.SqlSession;
@@ -97,10 +100,10 @@ public class StudentService {
     public static void studentMenu(Student student) {
         while (true) {
             System.out.println("===== 学生菜单 =====\n" + "1. 绑定/修改宿舍\n" + "2. 创建报修单\n" +
-                    "3. 查看我的报修记录\n" + "4. 取消报修单\n" + "5. 修改密码\n" + "6. 退出");
-            System.out.println("请选择操作（输入 1-6）：");
+                    "3. 查看我的报修记录\n" + "4. 取消报修单\n" + "5. 修改密码\n" + "6. 评价管理员\n" + "7. 退出");
+            System.out.println("请选择操作（输入 1-7）：");
             System.out.print(">");
-            int choice = intInput.intInput(1, 6);
+            int choice = intInput.intInput(1, 7);
             switch (choice) {
                 case 1:
                     dormitoryService(student);
@@ -118,6 +121,8 @@ public class StudentService {
                     changeId(student);
                     break;
                 case 6:
+                    break;
+                case 7:
                     System.out.println("退出成功！");
                     return;
                 default:
