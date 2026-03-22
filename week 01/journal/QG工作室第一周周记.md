@@ -289,4 +289,21 @@ INSERT INTO 表名(列名1，列名2，......) VALUES(值1，值2，......);
 
 ​		*这里先写登录学生，不会写传输加密，遂不管了。*
 
-1. 
+1. 先getStudentDormitory看是否为空，为空就绑定，否则就修改。无论是什么，都只需要设置好边界条件，接着把数据塞到student，接着mapper.updateById(student)即可。
+2. 创建报修单。先处理边界条件，输入好设备类型及损坏描述，把数据全部set到report创的对象里，并把status设为active，id无需管，因为是AUTO-INCREMENT。之后就mapper.insert即可。
+
+
+
+---
+
+---
+
+## ==DAY 6==
+
+​		*下午和隔壁宿舍打双打羽毛球。*
+
+
+
+- #### 继续写学生登录
+
+  1.  查看报修单。这里使用mybatisplus的selectList得到所有特定的列表。全部列表直接传入null，特定就使用QueryWrapper<>进行“eq”,”gt”,”like”的确定范围。得到的列表判定is

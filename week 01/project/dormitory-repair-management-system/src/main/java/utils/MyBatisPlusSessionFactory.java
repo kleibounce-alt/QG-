@@ -33,7 +33,7 @@ public class MyBatisPlusSessionFactory {
         // 1. 创建数据源（与 mybatis-config.xml 中的配置保持一致）
         DataSource dataSource = new PooledDataSource(
                 "com.mysql.cj.jdbc.Driver",
-                "jdbc:mysql://127.0.0.1:3306/QG?useSSL=false&serverTimezone=Asia/Shanghai",
+                "jdbc:mysql://127.0.0.1:3306/allqg?useSSL=false&serverTimezone=Asia/Shanghai",
                 "root",
                 "112302kxt"
         );

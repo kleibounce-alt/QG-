@@ -16,6 +16,7 @@ public class Main {
         //退出页面的标志
         int sign = 0;
         while (true) {
+            if (sign == 1) break;
             menu();
             Scanner sc = new Scanner(System.in);
             int choice = sc.nextInt();
@@ -53,9 +54,11 @@ public class Main {
     public static void login() {
         System.out.println("===== 用户登录 =====");
         Scanner sc = new Scanner(System.in);
-        System.out.println("请输入账号：\n" + ">");
+        System.out.println("请输入账号：");
+        System.out.print(">");
         String account = sc.nextLine();
-        System.out.println("请输入密码：\n" + ">");
+        System.out.println("请输入密码：");
+        System.out.print(">");
         String password = sc.nextLine();
         Long id;
         try {
@@ -81,9 +84,15 @@ public class Main {
             Admin admin = adminMapper.selectById(id);
             if (admin != null && password.equals(admin.getPassword())) {
                 System.out.println("管理员" + id + "登录成功！");
-
+                AdminService.adminMenu(admin);
                 return;
             }
+            System.out.println("账号或密码错误！请重新输入");
+            return ;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("数据库出错！");
         }
     }
 

@@ -6,6 +6,6 @@ import lombok.Data;
 @TableName("Admin")
 @Data
 public class Admin {
-    private long id;
+    private Long id;
     private String password;
 }
