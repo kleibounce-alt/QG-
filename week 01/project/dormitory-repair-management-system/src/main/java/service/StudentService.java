@@ -27,7 +27,8 @@ public class StudentService {
         //注册学号
         while (true) {
             System.out.print(">");
-            String line = sc.nextLine().trim();   // 读取整行并去除首尾空白
+            // 读取整行并去除首尾空白
+            String line = sc.nextLine().trim();
 
             if (line.isEmpty()) {
                 System.out.println("不可输入空白！");
@@ -224,7 +225,7 @@ public class StudentService {
                     description = sc2.nextLine();
                     break;
                 }
-                else System.out.println("输入不能为空！");
+                else {System.out.println("输入不能为空！");}
             }
 
             report report = new report();

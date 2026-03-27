@@ -1,0 +1,19 @@
+spring:
+  application: { name: dormitory-repair-management-system-springboot }
+
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/allqg?useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: 112302kxt
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true   # 驼峰映射
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 开发时输出 SQL
+  global-config:
+    db-config:
+      id-type: auto   # 主键自增
+jwt:
+  secret: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef   # 至少64个字符
+  expiration: 86400000   # 24小时，单位毫秒
