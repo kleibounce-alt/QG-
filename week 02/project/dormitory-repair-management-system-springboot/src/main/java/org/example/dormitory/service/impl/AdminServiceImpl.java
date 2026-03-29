@@ -37,38 +37,38 @@ public class AdminServiceImpl implements AdminService{
     private PasswordEncoder passwordEncoder;
 
     @Override
-    //注册
     public void register(RegisterRequest request) {
-        String id = String.valueOf(request.getId());
-        if (!id.matches("^(0025)\\d{6}$")) {
-            throw new IllegalArgumentException("学号前缀必须为0025且长度为10位");
+        String idStr = request.getId();
+        log.info("接收到的工号: {}", idStr);
+        if (!idStr.matches("^0025\\d{6}$")) {
+            throw new IllegalArgumentException("工号前缀必须为0025且长度为10位");
         }
+        Long idLong = Long.valueOf(idStr);
+        // 检查是否存在
         QueryWrapper<Admin> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", id);
+        queryWrapper.eq("id", idLong);
         long count = adminMapper.selectCount(queryWrapper);
         if (count > 0) {
             throw new IllegalArgumentException("该工号已存在");
         }
-
         Admin admin = new Admin();
-        admin.setId(request.getId());
-        //密码加密
+        admin.setId(idLong);
         admin.setPassword(passwordEncoder.encode(request.getPassword()));
         adminMapper.insert(admin);
-        log.info("管理员注册成功：{}", request.getId());
+        log.info("管理员注册成功：{}", idStr);
     }
 
     @Override
-    //登录
     public String login(LoginRequest request) {
-        Admin admin = getAdminById(request.getId());
+        String idStr = request.getId();
+        Long idLong = Long.valueOf(idStr);
+        Admin admin = getAdminById(idLong);
         if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
             throw new IllegalArgumentException("工号或密码错误");
         }
-
-        //生成JWT
-        String token = jwtUtils.generateToken(String.valueOf(admin.getId()), "ROLE_ADMIN");
-        log.info("管理员登录成功：{}", admin.getId());
+        String subject = String.format("%010d", admin.getId());
+        String token = jwtUtils.generateToken(subject, "ROLE_ADMIN");
+        log.info("管理员登录成功：{}", subject);
         return token;
     }
 
@@ -124,22 +124,17 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
-    //修改密码
     public void changePassword(Long id, ChangePasswordRequest request) {
         Admin admin = getAdminById(id);
         if (!passwordEncoder.matches(request.getOldPassword(), admin.getPassword())) {
             throw new IllegalArgumentException("旧密码错误！");
         }
-
-        //加密储存
         admin.setPassword(passwordEncoder.encode(request.getNewPassword()));
         int r = adminMapper.updateById(admin);
-        if (r > 0) {
-            log.info("修改成功：{}", admin.getId());
-        }
-        else {
+        if (r == 0) {
             throw new IllegalArgumentException("修改失败！");
         }
+        log.info("管理员 {} 修改密码成功", id);
     }
 
     @Override

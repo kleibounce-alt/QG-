@@ -9,6 +9,6 @@ import lombok.Data;
 
 //注册
 public class RegisterRequest {
-    private Long id;
+    private String id;
     private String password;
 }

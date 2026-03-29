@@ -9,6 +9,6 @@ import lombok.Data;
 
 //登录
 public class LoginRequest {
-    private Long id;
+    private String id;
     private String password;
 }

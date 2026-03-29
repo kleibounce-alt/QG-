@@ -42,41 +42,41 @@ public class StudentServiceImpl implements StudentService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    //注册
     public void register(RegisterRequest request) {
-        String id = String.valueOf(request.getId());
-        if (!id.matches("^(3125 | 3225) \\d{6}$")) {
+        String idStr = request.getId();
+        log.info("接收到的学号: {}", idStr);
+        if (!idStr.matches("^(3125|3225)\\d{6}$")) {
             throw new IllegalArgumentException("学号前缀必须为3125或3225且长度为10位");
         }
-
+        Long idLong = Long.valueOf(idStr);
+        // 检查是否存在
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", id);
+        queryWrapper.eq("id", idLong);
         long count = studentMapper.selectCount(queryWrapper);
         if (count > 0) {
             throw new IllegalArgumentException("该学号已存在");
         }
-
         Student student = new Student();
-        student.setId(request.getId());
-        //进行加密
+        student.setId(idLong);
         student.setPassword(passwordEncoder.encode(request.getPassword()));
         student.setDormitory("");
         student.setRoomId("");
         studentMapper.insert(student);
-        log.info("学生注册成功：{}", request.getId());
+        log.info("学生注册成功：{}", idStr);
     }
 
     @Override
-    //登录
     public String login(LoginRequest request) {
-        Student student = getStudentById(request.getId());
+        String idStr = request.getId();
+        Long idLong = Long.valueOf(idStr);
+        Student student = getStudentById(idLong);
         if (!passwordEncoder.matches(request.getPassword(), student.getPassword())) {
             throw new IllegalArgumentException("学号或密码错误");
         }
-
-        // 生成 JWT
-        String token = jwtUtils.generateToken(String.valueOf(student.getId()),"ROLE_STUDENT");
-        log.info("学生登录成功：{}", student.getId());
+        // 格式化：补足10位，保留前导零
+        String subject = String.format("%010d", student.getId());
+        String token = jwtUtils.generateToken(subject, "ROLE_STUDENT");
+        log.info("学生登录成功：{}", subject);
         return token;
     }
 
@@ -152,13 +152,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    //修改密码
     public void changePassword(Long studentId, ChangePasswordRequest request) {
         Student student = getStudentById(studentId);
-        if (!student.getPassword().equals(request.getOldPassword())) {
+
+        if (!passwordEncoder.matches(request.getOldPassword(), student.getPassword())) {
             throw new IllegalArgumentException("旧密码错误！");
         }
-
         // 新密码加密存储
         student.setPassword(passwordEncoder.encode(request.getNewPassword()));
         int r = studentMapper.updateById(student);
