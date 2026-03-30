@@ -23,8 +23,6 @@ public class AdminController {
 
     @PostMapping("/register")
     public Result<Void> register(@RequestBody RegisterRequest request) {
-        System.out.println("=== 进入 AdminController.register ===");
-        System.out.println("接收到的工号: " + request.getId());
         adminService.register(request);
         return Result.success();
     }
