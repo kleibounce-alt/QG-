@@ -9,23 +9,27 @@
         <input type="radio" value="admin" v-model="role" /> 管理员
       </label>
     </div>
-    <input
-        type="text"
+    <el-input
         v-model="id"
         :placeholder="role === 'student' ? '学号' : '工号'"
+        clearable
     />
-    <input
-        type="password"
+    <el-input
         v-model="password"
-        placeholder="密码"
-    />
-    <input
         type="password"
+        placeholder="密码"
+        show-password
+    />
+    <el-input
         v-model="confirmPassword"
+        type="password"
         placeholder="确认密码"
+        show-password
         @keyup.enter="register"
     />
-    <button @click="register" :disabled="loading">注册</button>
+    <el-button type="primary" @click="register" :loading="loading" style="width: 100%; margin-top: 10px;">
+      注册
+    </el-button>
     <p class="login-link">
       已有账号？<router-link to="/login">去登录</router-link>
     </p>
@@ -77,16 +81,15 @@ const register = async () => {
   loading.value = true
   try {
     let res
-    // Register.vue 中的 register 函数
     if (role.value === 'student') {
-      res = await studentRegister({ id: id.value, password: password.value });
+      res = await studentRegister({ id: id.value, password: password.value })
     } else {
-      res = await adminRegister({ id: id.value, password: password.value });
+      res = await adminRegister({ id: id.value, password: password.value })
     }
 
     if (res.code === 200) {
       ElMessage.success('注册成功，请登录')
-      router.push('/login')
+      await router.push('/login')
     } else {
       ElMessage.error(res.message || '注册失败')
     }
@@ -104,13 +107,6 @@ const register = async () => {
   max-width: 300px;
   margin: 100px auto;
   text-align: center;
-}
-input, button {
-  display: block;
-  width: 100%;
-  margin: 10px 0;
-  padding: 8px;
-  box-sizing: border-box;
 }
 .role-switch {
   margin: 15px 0;

@@ -1,5 +1,6 @@
 package org.example.dormitory.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dormitory.dto.*;
@@ -73,11 +74,13 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
-    //查看所有报修表
-    public List<report> getAllReports () {
-        return reportMapper.selectList(null);
+    public List<report> getAllReports(String status) {
+        LambdaQueryWrapper<report> wrapper = new LambdaQueryWrapper<>();
+        if (status != null && !status.isEmpty()) {
+            wrapper.eq(report::getStatus, status);
+        }
+        return reportMapper.selectList(wrapper);
     }
-
     @Override
     //查看某一个报修表
     public report getOneReport(GetReportRequest request) {
@@ -89,6 +92,7 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
+    //更新报修表状态
     public void updateReport(UpdateReportRequest request) {
         report report = reportMapper.selectById(request.getReportId());
         if (report == null) {

@@ -5,6 +5,11 @@ spring:
     password: 112302kxt
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true   # 驼峰映射
@@ -21,3 +26,7 @@ debug: true
 logging:
   level:
     org.example.dormitory: DEBUG
+
+file:
+  upload-dir: uploads/report_images/
+

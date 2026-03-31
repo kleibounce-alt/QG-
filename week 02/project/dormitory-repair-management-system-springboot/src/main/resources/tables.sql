@@ -21,3 +21,12 @@ CREATE TABLE student (
                          roomId VARCHAR(225) DEFAULT '',
                          PRIMARY KEY (id)
 );
+
+CREATE TABLE report_image (
+                                id bigint(20) NOT NULL AUTO_INCREMENT,
+                                report_id bigint(20) NOT NULL,
+                                image_path varchar(255) NOT NULL,
+                                original_name varchar(255) DEFAULT NULL,
+                                create_time bigint(20) DEFAULT NULL,
+                                PRIMARY KEY (id)
+);

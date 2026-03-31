@@ -1,30 +1,31 @@
 package org.example.dormitory.config;
 
 import io.jsonwebtoken.Claims;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dormitory.common.Result;
 import org.example.dormitory.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-/**
- * @author klei
- */
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
 
     @Autowired
     private JwtUtils jwtUtils;
 
-    // 放行路径
     private static final List<String> PUBLIC_PATHS = Arrays.asList(
             "/api/student/login",
             "/api/student/register",
@@ -37,14 +38,20 @@ public class AuthInterceptor implements HandlerInterceptor {
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             return true;
         }
+
         String uri = request.getRequestURI();
 
-        // 1. 放行公开接口
+        // 放行公开接口
         if (PUBLIC_PATHS.contains(uri)) {
             return true;
         }
 
-        // 2. 获取并验证 Token
+        // 放行静态资源
+        if (uri.startsWith("/uploads/")) {
+            return true;
+        }
+
+        // 验证 Token
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             sendUnauthorized(response, "缺少认证信息");
@@ -57,37 +64,36 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        // 3. 解析 Token 获取用户信息
+        // 解析 Token
         Claims claims = jwtUtils.getClaims(token);
         String userIdStr = claims.getSubject();
         String role = claims.get("role", String.class);
+
         if (role == null) {
             sendUnauthorized(response, "无效的 token 角色");
             return false;
         }
 
-        // 4. 权限校验：根据路径前缀判断角色是否有权访问
-        if (uri.startsWith("/api/student/") && !"ROLE_STUDENT".equals(role)) {
-            sendUnauthorized(response, "无权限访问学生资源");
-            return false;
-        }
-        if (uri.startsWith("/api/admin/") && !"ROLE_ADMIN".equals(role)) {
-            sendUnauthorized(response, "无权限访问管理员资源");
-            return false;
-        }
-
-        // 5. 将用户信息存入请求属性（供 Controller 使用）
         Long userIdLong = Long.parseLong(userIdStr);
+
+        // ⭐ 关键：将认证信息存入 Spring Security 上下文
+        // 这样 @PreAuthorize 才能生效
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        userIdLong,
+                        null,
+                        Collections.singletonList(new SimpleGrantedAuthority(role))
+                );
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // 同时存入 request attribute（供 Controller 使用 @RequestAttribute）
         request.setAttribute("userId", userIdLong);
-        request.setAttribute("userIdStr", userIdStr);
         request.setAttribute("role", role);
         if ("ROLE_STUDENT".equals(role)) {
             request.setAttribute("studentId", userIdLong);
-            request.setAttribute("studentIdStr", userIdStr);
-        }
-        if ("ROLE_ADMIN".equals(role)) {
+        } else if ("ROLE_ADMIN".equals(role)) {
             request.setAttribute("adminId", userIdLong);
-            request.setAttribute("adminIdStr", userIdStr);
         }
 
         return true;

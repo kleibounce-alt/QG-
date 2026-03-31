@@ -34,8 +34,8 @@ public class AdminController {
     }
 
     @GetMapping("/reports")
-    public Result<List<report>> getAllReports() {
-        List<report> reports = adminService.getAllReports();
+    public Result<List<report>> getAllReports(@RequestParam(required = false) String status) {
+        List<report> reports = adminService.getAllReports(status);
         return Result.success(reports);
     }
 

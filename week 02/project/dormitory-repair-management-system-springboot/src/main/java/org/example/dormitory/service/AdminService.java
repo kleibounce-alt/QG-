@@ -15,7 +15,7 @@ public interface AdminService {
     //登录
     String login(LoginRequest request);
     //查看所有报修单
-    List<report> getAllReports();
+    List<report> getAllReports(String status);
     //查看某个报修单
     report getOneReport(GetReportRequest getReportRequest);
     //更新报修单

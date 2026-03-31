@@ -61,3 +61,18 @@ export const cancelReport = (reportId: number): Promise<ResultData<void>> => {
 export const changeStudentPassword = (data: ChangePasswordData): Promise<ResultData<void>> => {
     return request.put('/api/student/password', data)
 }
+
+// 上传图片（关联报修单）
+export const uploadImage = (reportId: number, file: File): Promise<ResultData<string>> => {
+    const formData = new FormData()
+    formData.append('reportId', reportId.toString())
+    formData.append('file', file)
+    return request.post('/api/images/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    })
+}
+
+// 获取某个报修单的图片（学生用）
+export const getReportImagesByStudent = (reportId: number): Promise<ResultData<any[]>> => {
+    return request.get(`/api/images/report/${reportId}`)
+}

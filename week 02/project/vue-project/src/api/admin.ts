@@ -32,9 +32,9 @@ export const adminRegister = (data: AdminRegisterData): Promise<ResultData<void>
     return request.post('/api/admin/register', data)
 }
 
-// 获取所有报修单
-export const getAllReports = (): Promise<ResultData<any[]>> => {
-    return request.get('/api/admin/reports')
+// 获取所有报修单（支持状态筛选）
+export const getAllReports = (status?: string): Promise<ResultData<any[]>> => {
+    return request.get('/api/admin/reports', { params: { status } })
 }
 
 // 获取单个报修单详情
@@ -55,4 +55,9 @@ export const deleteReport = (reportId: number): Promise<ResultData<void>> => {
 // 修改管理员密码
 export const changeAdminPassword = (data: ChangePasswordData): Promise<ResultData<void>> => {
     return request.put('/api/admin/password', data)
+}
+
+// 获取某个报修单的所有图片（管理员用）- 修正路径
+export const getReportImagesByAdmin = (reportId: number): Promise<ResultData<any[]>> => {
+    return request.get(`/api/images/admin/report/${reportId}`)   // 修改为正确路径
 }
